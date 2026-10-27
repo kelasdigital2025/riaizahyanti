@@ -1,84 +1,114 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="utf-8">
+<html lang="id">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Balap Mobil Ceria</title>
+<title>Kuis Perubahan Energi – Kelas 8</title>
 <style>
-:root{--bg:#7ad7ff;--panel:#fff;--ink:#3a2a7a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a6fa8;--panel:#fff4d6;--ink:#3a2a7a}}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;touch-action:none;font-family:"Trebuchet MS",system-ui,sans-serif;-webkit-user-select:none;user-select:none}
-body{position:relative}
-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.b{position:absolute;bottom:14px;width:34%;max-width:150px;height:78px;border:0;border-radius:40px;font-size:42px;color:#fff;background:rgba(255,90,140,.82);box-shadow:0 6px 0 rgba(120,20,70,.5)}
-.b:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(120,20,70,.5)}
-#L{left:14px}#R{right:14px;background:rgba(60,160,255,.85);box-shadow:0 6px 0 rgba(10,60,130,.5)}
-#ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(40,20,90,.35)}
-#card{background:var(--panel);color:var(--ink);border-radius:28px;padding:22px 26px;text-align:center;width:min(82%,340px);box-shadow:0 8px 0 rgba(0,0,0,.2)}
-#card h1{margin:0 0 6px;font-size:30px}
-#card p{margin:6px 0;font-size:18px}
-#go{margin-top:12px;border:0;border-radius:30px;padding:14px 36px;font-size:26px;font-weight:bold;color:#fff;background:linear-gradient(#ffb300,#ff6d00);box-shadow:0 6px 0 #b34700}
-#go:active{transform:translateY(4px);box-shadow:0 2px 0 #b34700}
-</style></head><body>
-<canvas id="c"></canvas>
-<button class="b" id="L" aria-label="Kiri">◀</button>
-<button class="b" id="R" aria-label="Kanan">▶</button>
-<div id="ov"><div id="card"><h1 id="t">🏎️ Balap Mobil Ceria</h1><p id="m">Geser kiri atau kanan.<br>Ambil ⭐ dan 💎, hindari 🚧 dan mobil lain!</p><p id="bs"></p><button id="go">Main! 🚀</button></div></div>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#17202e;--mu:#5d6b7e;--ac:#f59e0b;--ac2:#1d4ed8;--ok:#16a34a;--no:#dc2626;--bd:#d9e1ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1622;--card:#182233;--tx:#eaf0f8;--mu:#9aa8bd;--bd:#2a3750;--ac2:#60a5fa}}
+:root[data-theme="dark"]{--bg:#0f1622;--card:#182233;--tx:#eaf0f8;--mu:#9aa8bd;--bd:#2a3750;--ac2:#60a5fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+#app{max-width:640px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:1.6rem}h2{margin:0 0 12px;font-size:1.15rem}
+p{color:var(--mu);margin:6px 0}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:1rem;margin:12px 0}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--ac2);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:600;width:100%}
+.top{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mu);margin-bottom:8px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--ac);transition:width .3s}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--tx);border:2px solid var(--bd);border-radius:12px;padding:12px 14px;margin:8px 0}
+.opt:hover:not(:disabled){border-color:var(--ac2)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--bg))}
+.opt.no{border-color:var(--no);background:color-mix(in srgb,var(--no) 18%,var(--bg))}
+.fb{margin:12px 0;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:.95rem}
+.score{font-size:4rem;font-weight:800;color:var(--ac);text-align:center;line-height:1.1}
+.c{text-align:center}
+.rv{border-top:1px solid var(--bd);padding:10px 0;font-size:.92rem}
+.rv b{color:var(--no)}
+</style>
+</head>
+<body>
+<div id="app"></div>
 <script>
-const cv=document.getElementById('c'),x=cv.getContext('2d');
-let W,H,D,roadW,laneW,roadX,S,best=0,au;
-try{best=+localStorage.getItem('bmc_best')||0}catch(e){}
-function rs(){D=Math.min(devicePixelRatio||1,2);W=document.body.clientWidth;H=document.body.clientHeight;cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);roadW=Math.min(W*.86,420);laneW=roadW/3;roadX=(W-roadW)/2}
-addEventListener('resize',rs);rs();
-const COL=['#ff3d71','#ffb300','#2ecc71','#3d8bff','#a64dff','#ff7a00'];
-function beep(f,d,tp){try{au=au||new(window.AudioContext||window.webkitAudioContext)();const o=au.createOscillator(),g=au.createGain();o.type=tp||'sine';o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(au.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,au.currentTime+d);o.stop(au.currentTime+d)}catch(e){}}
-function reset(){S={mode:'play',score:0,lives:3,lvl:1,off:0,items:[],parts:[],spawn:1,inv:0,pl:1,px:roadX+laneW*1.5,msg:0,shake:0}}
-S={mode:'start',score:0,lives:3,lvl:1,off:0,items:[],parts:[],spawn:1,inv:0,pl:1,px:W/2,msg:0,shake:0};
-const lx=l=>roadX+laneW*(l+.5);
-function mv(d){if(S.mode!=='play')return;S.pl=Math.max(0,Math.min(2,S.pl+d));beep(500+S.pl*80,.06)}
-L.onpointerdown=e=>{e.stopPropagation();mv(-1)};R.onpointerdown=e=>{e.stopPropagation();mv(1)};
-cv.onpointerdown=e=>mv(e.clientX<W/2?-1:1);
-let sx=null;cv.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
-addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mv(-1);if(e.key==='ArrowRight')mv(1)});
-go.onclick=()=>{reset();ov.style.display='none';beep(660,.15)};
-function carDraw(cx,cy,w,c,blink){if(blink)return;const h=w*1.7;x.save();x.translate(cx,cy);x.fillStyle='#222';[[-1,-.6],[1,-.6],[-1,.4],[1,.4]].forEach(p=>x.fillRect(p[0]*w*.52-w*.1,p[1]*h*.5-h*.14,w*.2,h*.28));
-x.fillStyle=c;x.beginPath();x.roundRect(-w/2,-h/2,w,h,w*.28);x.fill();
-x.fillStyle='rgba(255,255,255,.35)';x.fillRect(-w*.12,-h/2+4,w*.24,h-8);
-x.fillStyle='#bfeaff';x.beginPath();x.roundRect(-w*.34,-h*.22,w*.68,h*.26,6);x.fill();
-x.fillStyle='#fff3a0';x.beginPath();x.arc(-w*.3,-h/2+6,w*.08,0,7);x.arc(w*.3,-h/2+6,w*.08,0,7);x.fill();x.restore()}
-function em(t,cx,cy,s){x.font=s+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(t,cx,cy)}
-function pop(cx,cy,c){for(let i=0;i<10;i++)S.parts.push({x:cx,y:cy,vx:(Math.random()-.5)*300,vy:(Math.random()-.7)*300,l:.6,c:c||COL[i%6]})}
-function say(t){S.msg=1.4;S.mt=t}
-function end(){S.mode='over';if(S.score>best){best=Math.floor(S.score);try{localStorage.setItem('bmc_best',best)}catch(e){}}
-t.textContent='🏁 Selesai!';m.innerHTML='Poinmu: <b>'+Math.floor(S.score)+'</b> ⭐';bs.textContent='Poin terbaik: '+best;go.textContent='Main lagi! 🔄';ov.style.display='flex';beep(200,.4,'sawtooth')}
-function upd(dt){const sc=H/700,sp=(260+S.lvl*45)*sc;S.off+=sp*dt;S.score+=dt*2;
-const nl=1+Math.floor(S.score/150);if(nl>S.lvl){S.lvl=nl;say('Level '+nl+'! 🎉');beep(880,.3)}
-S.spawn-=dt;if(S.spawn<0){S.spawn=Math.max(.4,1-S.lvl*.07);const r=Math.random(),l=Math.floor(Math.random()*3);
-S.items.push({l,y:-60,t:r<.4?'star':r<.5?'gem':r<.75?'cone':'car',c:COL[Math.floor(Math.random()*6)]})}
-S.px+=(lx(S.pl)-S.px)*Math.min(1,dt*14);S.inv=Math.max(0,S.inv-dt);S.msg-=dt;S.shake=Math.max(0,S.shake-dt);
-const py=H*.78,cw=laneW*.5;
-S.items=S.items.filter(it=>{it.y+=sp*dt*(it.t==='car'?1.25:1);if(it.y>H+80)return false;
-if(it.l===S.pl&&Math.abs(it.y-py)<cw*.95){
-if(it.t==='star'){S.score+=10;pop(lx(it.l),it.y,'#ffd400');beep(900,.12);return false}
-if(it.t==='gem'){S.score+=25;pop(lx(it.l),it.y,'#00d4ff');beep(1200,.2);return false}
-if(S.inv<=0){S.lives--;S.inv=1.5;S.shake=.3;pop(lx(it.l),it.y,'#ff5a5a');beep(150,.25,'square');if(S.lives<=0)end()}
-return it.t==='star'||it.t==='gem'}return true});
-S.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=600*dt;p.l-=dt});S.parts=S.parts.filter(p=>p.l>0)}
-function draw(){const sc=H/700,sh=S.shake>0?(Math.random()-.5)*10:0;x.save();x.translate(sh,0);
-let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#5cc8ff');g.addColorStop(1,'#c9f1ff');x.fillStyle=g;x.fillRect(-10,0,W+20,H);
-const bh=70*sc;for(let i=-1;i<H/bh+1;i++){const y=i*bh+(S.off%(bh*2));x.fillStyle=(Math.round(y/bh)%2)?'#5fd35f':'#7be87b';x.fillRect(-10,y,W+20,bh)}
-x.fillStyle='#5b5f8a';x.fillRect(roadX,0,roadW,H);
-const kh=40*sc;for(let i=-2;i<H/kh+2;i++){const y=i*kh+(S.off%(kh*2));x.fillStyle=(Math.round(y/kh)%2)?'#ff3d71':'#fff';x.fillRect(roadX-10,y,10,kh);x.fillRect(roadX+roadW,y,10,kh)}
-x.fillStyle='#ffe44d';const dh=50*sc;for(let i=-2;i<H/dh+2;i++){const y=i*dh*2+(S.off%(dh*2));[1,2].forEach(k=>x.fillRect(roadX+laneW*k-3,y,6,dh))}
-const sd=['🌳','🌷','🌈','🌻','🎈','🌴'],gap=150*sc;for(let i=0;i<H/gap+2;i++){const y=((i*gap+S.off)%(H+gap*2))-gap;const e=sd[i%6];if(roadX>34){em(e,roadX/2-4,y,Math.min(44,roadX*.8));em(sd[(i+3)%6],roadX+roadW+(W-roadX-roadW)/2+4,y+gap/2,Math.min(44,roadX*.8))}}
-const cw=laneW*.5;
-S.items.forEach(it=>{const cx=lx(it.l);if(it.t==='car')carDraw(cx,it.y,cw*.95,it.c);else em({star:'⭐',gem:'💎',cone:'🚧'}[it.t],cx,it.y,cw*1.1)});
-carDraw(S.px,H*.78,cw*.95,'#ff2d55',S.inv>0&&Math.floor(S.inv*10)%2===0);
-S.parts.forEach(p=>{x.globalAlpha=Math.max(0,p.l*1.6);x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,6,0,7);x.fill()});x.globalAlpha=1;x.restore();
-x.textBaseline='middle';x.textAlign='left';x.font='bold 26px "Trebuchet MS",sans-serif';x.lineWidth=5;x.strokeStyle='#3a2a7a';x.fillStyle='#fff';
-const tx='⭐ '+Math.floor(S.score);x.strokeText(tx,14,30);x.fillText(tx,14,30);
-x.font='bold 18px "Trebuchet MS",sans-serif';const lv='Level '+S.lvl;x.strokeText(lv,14,60);x.fillText(lv,14,60);
-x.textAlign='right';x.font='26px serif';x.fillText('❤️'.repeat(Math.max(0,S.lives))+'🖤'.repeat(Math.max(0,3-S.lives)),W-12,30);
-if(S.msg>0){x.textAlign='center';x.font='bold 40px "Trebuchet MS",sans-serif';x.strokeText(S.mt,W/2,H*.3);x.fillStyle='#ffe44d';x.fillText(S.mt,W/2,H*.3)}}
-let lt=performance.now();bs.textContent=best?'Poin terbaik: '+best:'';
-(function loop(n){const dt=Math.min(.05,(n-lt)/1000);lt=n;if(S.mode==='play')upd(dt);else S.off+=120*dt;draw();requestAnimationFrame(loop)})(lt);
-</script></body></html>
+// [pertanyaan, jawaban benar, salah1, salah2, salah3, penjelasan]
+const Q=[
+["Setrika listrik yang sedang dipakai mengubah energi ...","Listrik → kalor","Kalor → listrik","Kimia → bunyi","Cahaya → gerak","Elemen pemanas setrika mengubah energi listrik menjadi kalor."],
+["Lampu pijar yang menyala mengubah energi listrik menjadi ...","Cahaya dan kalor","Bunyi dan gerak","Kimia dan bunyi","Gerak saja","Lampu pijar menghasilkan cahaya sekaligus banyak kalor."],
+["Kipas angin yang berputar mengubah energi ...","Listrik → gerak","Gerak → listrik","Kalor → cahaya","Kimia → bunyi","Motor listrik mengubah energi listrik menjadi energi gerak."],
+["Senter yang menyala karena baterai mengalami perubahan energi ...","Kimia → listrik → cahaya","Cahaya → listrik → kimia","Gerak → kalor → cahaya","Listrik → kimia → gerak","Baterai menyimpan energi kimia, diubah menjadi listrik, lalu cahaya."],
+["Panel surya (sel surya) mengubah energi ...","Cahaya → listrik","Listrik → cahaya","Kalor → bunyi","Gerak → kimia","Sel surya menangkap cahaya matahari dan menghasilkan listrik."],
+["Pada proses fotosintesis, tumbuhan mengubah energi ...","Cahaya → kimia","Kimia → cahaya","Kalor → gerak","Listrik → kimia","Energi cahaya matahari disimpan sebagai energi kimia (glukosa)."],
+["Mikrofon mengubah energi ...","Bunyi → listrik","Listrik → bunyi","Cahaya → bunyi","Gerak → kalor","Getaran suara diubah menjadi sinyal listrik."],
+["Pengeras suara (speaker) mengubah energi ...","Listrik → bunyi","Bunyi → listrik","Kalor → listrik","Cahaya → bunyi","Arus listrik menggetarkan membran sehingga timbul bunyi."],
+["Bunyi Hukum Kekekalan Energi adalah ...","Energi tidak dapat diciptakan atau dimusnahkan, hanya berubah bentuk","Energi dapat diciptakan dari ketiadaan","Energi akan habis jika dipakai","Energi hanya ada dalam bentuk kalor","Total energi dalam sistem tertutup selalu tetap."],
+["Buah kelapa jatuh dari pohon. Perubahan energinya ...","Potensial → kinetik","Kinetik → potensial","Kimia → kalor","Listrik → gerak","Ketinggian berkurang, kecepatan bertambah."],
+["Dinamo sepeda yang menyalakan lampu mengubah energi ...","Gerak → listrik","Listrik → gerak","Kimia → listrik","Cahaya → gerak","Roda memutar dinamo sehingga dihasilkan listrik."],
+["Urutan perubahan energi pada PLTA yang benar adalah ...","Potensial air → kinetik air → listrik","Listrik → kinetik → potensial","Kimia → kalor → listrik","Cahaya → kimia → listrik","Air jatuh memutar turbin yang menggerakkan generator."],
+["Saat kedua telapak tangan digosok-gosokkan, terjadi perubahan energi ...","Gerak → kalor","Kalor → gerak","Listrik → gerak","Kimia → cahaya","Gesekan mengubah energi gerak menjadi kalor."],
+["Kompor gas yang menyala mengubah energi ...","Kimia → kalor dan cahaya","Listrik → kalor","Kalor → kimia","Gerak → cahaya","Gas LPG menyimpan energi kimia yang dilepas sebagai panas dan cahaya."],
+["Makanan yang kita makan menyimpan energi dalam bentuk ...","Energi kimia","Energi bunyi","Energi nuklir","Energi pegas","Makanan adalah sumber energi kimia bagi tubuh."],
+["Lima benda bermassa sama berada pada ketinggian berbeda. Energi potensial terbesar dimiliki benda pada ketinggian ...","Paling tinggi","Paling rendah","Sama untuk semua","Tepat di tanah","Ep = m·g·h, makin tinggi h makin besar Ep."],
+["Rumus energi potensial gravitasi adalah ...","Ep = m · g · h","Ep = ½ · m · v²","Ep = m · v","Ep = F · t","m = massa, g = gravitasi, h = ketinggian."],
+["Rumus energi kinetik adalah ...","Ek = ½ · m · v²","Ek = m · g · h","Ek = m · v","Ek = F · s²","Ek bergantung pada massa dan kuadrat kecepatan."],
+["Satuan energi dalam SI adalah ...","Joule","Watt","Newton","Pascal","Energi dan usaha dinyatakan dalam joule (J)."],
+["Benda 2 kg berada pada ketinggian 5 m (g = 10 m/s²). Energi potensialnya adalah ...","100 J","10 J","50 J","20 J","Ep = 2 × 10 × 5 = 100 J."],
+["Benda 4 kg bergerak dengan kecepatan 5 m/s. Energi kinetiknya adalah ...","50 J","100 J","20 J","25 J","Ek = ½ × 4 × 5² = 50 J."],
+["Jika kecepatan sebuah mobil menjadi 2 kali semula, energi kinetiknya menjadi ...","4 kali semula","2 kali semula","Tetap","½ kali semula","Ek sebanding dengan v², jadi 2² = 4 kali."],
+["Pada ayunan bandul, di titik tertinggi benda memiliki ...","Ep maksimum, Ek nol","Ek maksimum, Ep nol","Ep dan Ek sama-sama nol","Ek dan Ep sama-sama maksimum","Di titik tertinggi benda sesaat berhenti."],
+["Pada ayunan bandul, di titik terendah benda memiliki ...","Ek maksimum, Ep minimum","Ep maksimum, Ek nol","Ek nol, Ep nol","Ep dan Ek sama besar","Di titik terendah kecepatan paling besar."],
+["Televisi yang menyala mengubah energi listrik terutama menjadi ...","Cahaya, bunyi, dan kalor","Gerak dan kimia","Kimia dan kalor saja","Bunyi dan gerak","Layar menghasilkan cahaya, speaker bunyi, dan sebagian panas."],
+["Berikut yang termasuk sumber energi terbarukan adalah ...","Angin","Batu bara","Minyak bumi","Gas alam","Angin tidak habis dan terus tersedia secara alami."],
+["Berikut yang BUKAN sumber energi terbarukan adalah ...","Batu bara","Matahari","Air","Panas bumi","Batu bara berasal dari fosil dan membutuhkan jutaan tahun untuk terbentuk."],
+["Pada PLTB (pembangkit listrik tenaga bayu/angin), terjadi perubahan energi ...","Kinetik angin → gerak turbin → listrik","Listrik → angin → kalor","Kimia → angin → listrik","Cahaya → angin → listrik","Angin memutar baling-baling yang menggerakkan generator."],
+["Mesin sepeda motor berbahan bensin mengubah energi ...","Kimia → kalor → gerak","Listrik → kimia → gerak","Cahaya → kalor → kimia","Gerak → kimia → kalor","Pembakaran bensin menghasilkan panas yang menggerakkan piston."],
+["Lampu pijar dianggap kurang efisien karena ...","Sebagian besar listrik berubah menjadi kalor, bukan cahaya","Tidak menghasilkan cahaya sama sekali","Menciptakan energi baru","Mengubah semua listrik menjadi cahaya","Energi yang berubah menjadi kalor terbuang percuma."]
+];
+const $=document.getElementById("app");
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let S;
+function start(){
+  $.innerHTML=`<div class="card"><h1>⚡ Kuis Perubahan Energi</h1><p>IPA Kelas 8 • 30 soal pilihan ganda • Nilai akhir 0–100</p>
+  <input id="nm" placeholder="Tulis namamu" maxlength="40" autocomplete="name"><button class="btn" id="go">Mulai</button></div>`;
+  document.getElementById("go").onclick=()=>{
+    S={name:(document.getElementById("nm").value||"").trim()||"Siswa",order:sh(Q.map((_,i)=>i)),i:0,ok:0,streak:0,best:0,wrong:[]};
+    show();
+  };
+}
+function show(){
+  const q=Q[S.order[S.i]];
+  const opts=sh([[q[1],1],[q[2],0],[q[3],0],[q[4],0]]);
+  $.innerHTML=`<div class="card"><div class="top"><span>Soal ${S.i+1}/${Q.length}</span><span>✅ ${S.ok} &nbsp; 🔥 ${S.streak}</span></div>
+  <div class="bar"><i style="width:${S.i/Q.length*100}%"></i></div><h2>${q[0]}</h2><div id="o"></div><div id="f"></div></div>`;
+  const o=document.getElementById("o");
+  opts.forEach(([t,c])=>{
+    const b=document.createElement("button");b.className="opt";b.textContent=t;
+    b.onclick=()=>answer(q,opts,b,c,t);o.appendChild(b);
+  });
+}
+function answer(q,opts,btn,c,t){
+  const bs=[...document.querySelectorAll(".opt")];
+  bs.forEach((b,k)=>{b.disabled=true;if(opts[k][1])b.classList.add("ok")});
+  if(c){S.ok++;S.streak++;S.best=Math.max(S.best,S.streak)}
+  else{btn.classList.add("no");S.streak=0;S.wrong.push({q:q[0],a:q[1],e:q[5]})}
+  const last=S.i===Q.length-1;
+  document.getElementById("f").innerHTML=`<div class="fb">${c?"🎉 Benar!":"❌ Belum tepat."} ${q[5]}</div><button class="btn" id="nx">${last?"Lihat nilai":"Soal berikutnya"}</button>`;
+  document.getElementById("nx").onclick=()=>{if(last)finish();else{S.i++;show()}};
+}
+function finish(){
+  const n=Math.round(S.ok/Q.length*100);
+  const p=n>=85?"Sangat Baik 🏆":n>=70?"Baik 👍":n>=55?"Cukup 🙂":"Perlu belajar lagi 📚";
+  const tgl=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  $.innerHTML=`<div class="card c"><h2>Hasil: ${S.name.replace(/[<>&]/g,"")}</h2><div class="score">${n}</div><p><b>${p}</b></p>
+  <p>Benar ${S.ok} dari ${Q.length} • Beruntun terbaik 🔥 ${S.best}</p><p>${tgl}</p>
+  <p style="font-size:.85rem">Tangkap layar halaman ini sebagai bukti nilai.</p><button class="btn" id="re">Main lagi</button></div>
+  ${S.wrong.length?`<div class="card" style="margin-top:14px"><h2>Pembahasan soal yang salah</h2>${S.wrong.map(w=>`<div class="rv">${w.q}<br><b>Jawaban:</b> ${w.a}<br><span style="color:var(--mu)">${w.e}</span></div>`).join("")}</div>`:""}`;
+  document.getElementById("re").onclick=start;
+}
+start();
+</script>
+</body>
+</html>
